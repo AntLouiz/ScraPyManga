@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from decouple import config
+
 # Scrapy settings for so_manga project
 #
 # For simplicity, this file contains only settings considered important or
@@ -72,7 +74,7 @@ ITEM_PIPELINES = {
    'scrapy.contrib.pipeline.images.FilesPipeline': 1,
 }
 """
-IMAGES_STORE = '/home/luizr/Pictures'
+IMAGES_STORE = config('IMAGES_STORE', default='/home/Downloads/Scrapy_images')
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
