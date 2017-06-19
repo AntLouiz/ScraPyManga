@@ -23,6 +23,8 @@ USER_AGENT = 'Mozilla/5.0'
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
+LOG_ENABLED = config('LOG_ENABLED', default=False)
+
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 

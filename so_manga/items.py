@@ -21,3 +21,4 @@ class Images(scrapy.Item):
     image_urls = scrapy.Field()
     image_path = scrapy.Field()
     image_cap = scrapy.Field()
+    image_page = scrapy.Field()
