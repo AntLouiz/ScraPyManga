@@ -11,13 +11,14 @@ from so_manga.settings import IMAGES_STORE
 class ReaderSpider(scrapy.Spider):
     name = 'reader'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, manga_title, chapters, *args, **kwargs):
         self.start_urls = ['http://somanga.net']
-        self.manga_title = str(input("Insert a mangá: "))
+        self.manga_title = str(manga_title)
+        self.chapters = chapters
         self.allowed_domains = ['*']
 
     def parse(self, response):
-
+        print("Make connection with the site.")
         title = slugify(self.manga_title)
 
         link = 'http://somanga.net/manga/{}'.format(title)
