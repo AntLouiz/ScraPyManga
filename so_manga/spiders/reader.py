@@ -11,10 +11,10 @@ from so_manga.settings import IMAGES_STORE
 class ReaderSpider(scrapy.Spider):
     name = 'reader'
 
-    def __init__(self, manga_title, chapters, *args, **kwargs):
+    def __init__(self, manga_data, *args, **kwargs):
         self.start_urls = ['http://somanga.net']
-        self.manga_title = str(manga_title)
-        self.chapters = chapters
+        self.manga_title = str(manga_data['manga_title'])
+        self.chapters = manga_data['chapters']
         self.allowed_domains = ['*']
 
     def parse(self, response):
@@ -30,35 +30,36 @@ class ReaderSpider(scrapy.Spider):
         )
 
     def parse_detail(self, response):
+        
+        chapter = response.xpath(
+            '//div[contains(text(), "Cap {0}")]'.format(self.chapters[0])
+        )
+        chapter_text = chapter.xpath('./text()').extract_first()
+        print(chapter_text) 
+        if chapter_text:
 
-        last_chapter_text = response.xpath(
-            '//div[contains(text(), "Cap")]/text()'
-        ).extract_first()
-
-        if last_chapter_text:
-
-            last_chapter_link = response.xpath(
-                '//ul[contains(@class, "capitulos")]/li[1]/a/@href'
+            chapter_link = chapter.xpath(
+                    './parent::a/@href'
             ).extract_first()
-
+            
             title = response.xpath(
                 "//div[contains(@class, 'breadcrumbs')]/div/h1/text()"
             ).extract_first()
 
             print("The download will set in the {}".format(IMAGES_STORE))
-            print("Prepare to download the{} of {}...".format(last_chapter_text, title))
+            print("Prepare to download the{} of {}...".format(chapter_text, title))
 
             yield scrapy.Request(
-                url=last_chapter_link,
-                callback=self.parse_last_chapter,
-                meta={'title':title, 'cap':last_chapter_text},
+                url=chapter_link,
+                callback=self.parse_chapter,
+                meta={'title':title, 'cap':chapter_text},
                 dont_filter=True
             )
         else:
             print("Mangá not found.")
             raise CloseSpider
 
-    def parse_last_chapter(self, response):
+    def parse_chapter(self, response):
        
         imgs_urls = response.xpath(
             '//div[contains(@class, "col-sm-12 text-center")]/img/@src'
