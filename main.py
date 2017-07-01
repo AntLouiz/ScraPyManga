@@ -43,10 +43,8 @@ def main():
  
     if len(args.c[0]) == 2:
         manga_data['chapters'].append(args.c[0][1])
-        
-    manga_data['manga_title'] = args.n[0]
-    
-
+     
+    manga_data['manga_title'] = " ".join(args.n)
 
     process = CrawlerProcess(settings())
 
