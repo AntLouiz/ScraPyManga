@@ -35,7 +35,7 @@ class ReaderSpider(scrapy.Spider):
             '//div[contains(text(), "Cap {0}")]'.format(self.chapters[0])
         )
         chapter_text = chapter.xpath('./text()').extract_first()
-        print(chapter_text) 
+         
         if chapter_text:
 
             chapter_link = chapter.xpath(
