@@ -21,6 +21,8 @@ class ReaderSpider(scrapy.Spider):
         title = slugify(self.manga_title)
 
         link = 'http://somanga.net/manga/{}'.format(title)
+        
+        print("Searching for {}...".format(self.manga_title))
 
         yield scrapy.Request(
             url=link,
@@ -29,40 +31,53 @@ class ReaderSpider(scrapy.Spider):
         )
 
     def parse_detail(self, response):
-        print(self.chapters)
+        
+        # check if the mangá is founded
+        title = response.xpath(
+            "//div[contains(@class, 'breadcrumbs')]/div/h1/text()"
+            ).extract_first()
+        
+        if title:
+            print("Mangá {} founded !".format(title))
+        else:
+            print("Mangá not found.")
+            raise CloseSpider
+        
+        # get all chapters li's
+        li_selectors = response.xpath("//ul[contains(@class, 'capitulos')]/li")
+        li_selectors.reverse() # reverse the list
         
         print("The download will set in the {}".format(IMAGES_STORE))
-
-        for chapter in self.chapters:
-            if chapter == '-1':
-                chapter_selector = response.xpath(
-                        '//div[contains(text(), "Cap ")]'
-                    )
-            else:
-                chapter_selector = response.xpath(
-                        '//div[contains(text(), "Cap {0}")]'.format(chapter)
-                        )
-            chapter_text = chapter_selector.xpath('./text()').extract_first()
-            
-            if chapter_text:
-
-                chapter_link = chapter_selector.xpath(
-                        './parent::a/@href'
-                ).extract_first()
+        
+        
+        # processing the chapters 
+        if len(self.chapters) == 2:
+            if '-1' not in self.chapters:
+                # parse str('05') to int(5)
+                initial = int(self.chapters[0])-1 
+                final = int(self.chapters[1])
                 
-                title = response.xpath(
-                    "//div[contains(@class, 'breadcrumbs')]/div/h1/text()"
-                ).extract_first()
+                range_chapters = li_selectors[initial : final]
 
-                yield scrapy.Request(
-                    url=chapter_link,
-                    callback=self.parse_chapter,
-                    meta={'title':title, 'chapter':chapter_text},
-                    dont_filter=True
-                )
+                for chapter_li in range_chapters:
+                    print(chapter_li.xpath('./a/@href').extract_first())
             else:
-                print("Mangá not found.")
-                raise CloseSpider
+                raise NotImplementedError
+                    
+        elif len(self.chapters) == 1:
+            
+            # parse str('05') to int(5)
+            initial = int(self.chapters[0])-1
+            chapter_li = li_selectors[initial]
+            
+            chapter_link = chapter_li.xpath('./a/@href').extract_first()
+            
+            yield scrapy.Request(
+                url=chapter_link,
+                callback=self.parse_chapter,
+                meta={'title':title, 'chapter':self.chapters[0]},
+                dont_filter=True
+                )
 
     def parse_chapter(self, response):
      
