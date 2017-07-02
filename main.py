@@ -16,13 +16,25 @@ def chapters_range(string, regex = re.compile(r'(\d+)(?::(\d+))|(^$::(\d+))|(\d+
         raise argparse.ArgumentError
 
     string = string.split(':')
-     
+    
+    # validations of chapters range
+    
     for chapter in string:
-        
-        if int(chapter) < 10:
-            
+        # change a unknown chapter to the value  -1 
+        if chapter == '':
             index = string.index(chapter)
-           
+            string[index] = '-1'
+            
+    if len(string) == 2:
+        # if the chapters range have two numbers and not of them is a unknown chapter,
+        # test if first chapter on the range is higher than second.
+        
+        if int(string[0]) > int(string[1]) and '-1' not in string:
+            raise argparse.ArgumentError
+
+    for chapter in string:
+        if int(chapter) < 10 and chapter != '-1': 
+            index = string.index(chapter) 
             string[index] = '0' + chapter
     
     return string
