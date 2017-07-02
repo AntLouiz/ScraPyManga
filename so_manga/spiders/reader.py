@@ -60,12 +60,21 @@ class ReaderSpider(scrapy.Spider):
                 range_chapters = li_selectors[initial : final]
 
                 for chapter_li in range_chapters:
-                    print(chapter_li.xpath('./a/@href').extract_first())
+                    index = li_selectors.index(chapter_li) + 1
+                    print("Downloading the Chapter {} of {}...".format(index, title))
+                    chapter_link = chapter_li.xpath('./a/@href').extract_first()
+                    
+                    yield scrapy.Request(
+                        url=chapter_link,
+                        callback=self.parse_chapter,
+                        meta={'title':title, 'chapter':index},
+                        dont_filter=True
+                        )
             else:
                 raise NotImplementedError
                     
         elif len(self.chapters) == 1:
-            
+            print("Downloading the Chapter {} of {}...".format(self.chapters[0], title))
             # parse str('05') to int(5)
             initial = int(self.chapters[0])-1
             chapter_li = li_selectors[initial]
