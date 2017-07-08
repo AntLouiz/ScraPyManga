@@ -1,68 +1,61 @@
 # enconding: utf-8
 import re
-import argparse
 import scrapy
+from cli import Cli
 from scrapy.utils.project import get_project_settings as settings
 from scrapy.crawler import CrawlerProcess
 from so_manga.spiders.reader import ReaderSpider
 
-def chapters_range(string, regex = re.compile(r'(\d+)(?::(\d+))|(^$::(\d+))|(\d+)(::^$)|(^:$)|(\d+)')):
+class MangaDataField(dict):
     """
-        A type to be used to check if the chapter patterns is valid,
-        return a list if the regex match.
-    """
-   
-    if not regex.match(string):
-        raise argparse.ArgumentError
+        A descriptor to validate the chapters and manga title
+    """ 
+    def __setitem__(self, key, value): 
+        if key == 'chapters':
+            if isinstance(value, (list, tuple,)):
+                chapters = []
+                chapters.append(value[0])
+                if len(value) > 1:
+                    chapters.append(value[1])
 
-    string = string.split(':')
-    
-    # validations of chapters range
-    
-    for chapter in string:
-        # change a unknown chapter to the value  -1 
-        if chapter == '':
-            index = string.index(chapter)
-            string[index] = '-1'
-            
-    if len(string) == 2:
-        # if the chapters range have two numbers and not of them is a unknown chapter,
-        # test if first chapter on the range is higher than second.
-        
-        if int(string[0]) > int(string[1]) and '-1' not in string:
-            raise argparse.ArgumentError
+                dict.__setitem__(self, key, chapters)
 
-    for chapter in string:
-        if int(chapter) < 10 and chapter != '-1': 
-            index = string.index(chapter) 
-            string[index] = '0' + chapter
-    
-    return string
+        elif key == 'title':
+            if isinstance(value, object):
+                value = "".join(value)
+                print(value)
+                dict.__setitem__(self, key, value)
 
+        else:
+            raise Exception #change this exception later
+
+class Pymanga:
+    arg_parser = Cli #set a Command Line Interface
+    
+    def __init__(self, *args, **kwargs):
+        self.args = self.arg_parser.parse_args() #get the parser args
+        self.title = self.args.n # get the value of manga title
+        self.chapters = self.args.c[0] # get the value of manga chapters 
+
+        self.manga_data = MangaDataField(
+                title=self.title,
+                chapters=self.chapters
+        )
+
+        self.spider = ReaderSpider
+        self.crawler_proccess = CrawlerProcess(settings())  
+
+    def run(self):
+        self.crawler_proccess.crawl(
+                self.spider,
+                manga_data=self.manga_data
+        )
+
+        self.crawler_proccess.start()
 
 def main():
-    parser = argparse.ArgumentParser(description="A test of argument parser")
-    parser.add_argument('--c', type=chapters_range, action='store', nargs=1)
-    parser.add_argument('--n', type=str, action='store', nargs='+')
-    
-    args = parser.parse_args()
-    manga_data = {
-            'manga_title': None,
-            'chapters': []
-            }
-    
-    manga_data['chapters'].append(args.c[0][0])
- 
-    if len(args.c[0]) == 2:
-        manga_data['chapters'].append(args.c[0][1])
-     
-    manga_data['manga_title'] = " ".join(args.n)
-
-    process = CrawlerProcess(settings())
-
-    process.crawl(ReaderSpider, manga_data=manga_data)
-
-    process.start() # the script will block here until the crawling is finished
+    pymanga = Pymanga()
+    pymanga.run()
 
 if __name__ == "__main__":
         main()

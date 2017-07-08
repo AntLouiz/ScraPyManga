@@ -12,7 +12,7 @@ class ReaderSpider(scrapy.Spider):
     
     def __init__(self, manga_data, *args, **kwargs):
         self.start_urls = ['http://somanga.net']
-        self.manga_title = str(manga_data['manga_title'])
+        self.manga_title = str(manga_data['title'])
         self.chapters = manga_data['chapters']
         self.allowed_domains = ['*']  
 
