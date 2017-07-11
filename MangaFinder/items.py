@@ -22,3 +22,6 @@ class Images(scrapy.Item):
     image_path = scrapy.Field()
     image_chapter = scrapy.Field()
     image_page = scrapy.Field()
+
+    def __repr__(self):
+        return "Image."

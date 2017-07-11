@@ -4,7 +4,7 @@ import scrapy
 from cli import Cli
 from scrapy.utils.project import get_project_settings as settings
 from scrapy.crawler import CrawlerProcess
-from so_manga.spiders.reader import ReaderSpider
+from MangaFinder.spiders.reader import ReaderSpider
 
 class MangaDataField(dict):
     """
@@ -21,11 +21,9 @@ class MangaDataField(dict):
                 dict.__setitem__(self, key, chapters)
 
         elif key == 'title':
-            if isinstance(value, object):
-                value = "".join(value)
-                print(value)
-                dict.__setitem__(self, key, value)
-
+            value = "".join(value)
+            
+            dict.__setitem__(self, key, value)
         else:
             raise Exception #change this exception later
 

@@ -3,8 +3,8 @@ import scrapy
 from scrapy.exceptions import CloseSpider
 from urllib import request
 from slugify import slugify
-from so_manga.items import Images
-from so_manga.settings import IMAGES_STORE
+from MangaFinder.items import Images
+from MangaFinder.settings import IMAGES_STORE
 	
 
 class ReaderSpider(scrapy.Spider):

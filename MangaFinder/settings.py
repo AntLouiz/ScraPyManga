@@ -11,10 +11,10 @@ from decouple import config
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'so_manga'
+BOT_NAME = 'MangaFinder'
 
-SPIDER_MODULES = ['so_manga.spiders']
-NEWSPIDER_MODULE = 'so_manga.spiders'
+SPIDER_MODULES = ['MangaFinder.spiders']
+NEWSPIDER_MODULE = 'MangaFinder.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -24,7 +24,7 @@ USER_AGENT = 'Mozilla/5.0'
 ROBOTSTXT_OBEY = True
 
 LOG_ENABLED = config('LOG_ENABLED', default=False)
-
+LOG_LEVEL = 'DEBUG'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -69,7 +69,7 @@ LOG_ENABLED = config('LOG_ENABLED', default=False)
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-	'so_manga.pipelines.ImagePipeline': 1,
+	'MangaFinder.pipelines.ImagePipeline': 1,
 }
 
 """ITEM_PIPELINES = {
