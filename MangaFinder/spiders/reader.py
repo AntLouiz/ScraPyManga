@@ -5,7 +5,7 @@ from urllib import request
 from slugify import slugify
 from MangaFinder.items import Images
 from MangaFinder.settings import IMAGES_STORE
-	
+    
 
 class ReaderSpider(scrapy.Spider):
     name = 'reader'
