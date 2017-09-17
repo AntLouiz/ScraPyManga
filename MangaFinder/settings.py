@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import getpass
 from decouple import config
 
 # Scrapy settings for so_manga project
@@ -11,20 +11,20 @@ from decouple import config
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'so_manga'
+BOT_NAME = 'MangaFinder'
 
-SPIDER_MODULES = ['so_manga.spiders']
-NEWSPIDER_MODULE = 'so_manga.spiders'
+SPIDER_MODULES = ['MangaFinder.spiders']
+NEWSPIDER_MODULE = 'MangaFinder.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Mozilla/5.0'
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48.0'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
-LOG_ENABLED = config('LOG_ENABLED', default=False)
-
+LOG_ENABLED = config('LOG_ENABLED', default=True)
+LOG_LEVEL = 'DEBUG'
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
@@ -69,14 +69,15 @@ LOG_ENABLED = config('LOG_ENABLED', default=False)
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-	'so_manga.pipelines.ImagePipeline': 1,
+	'MangaFinder.pipelines.ImagePipeline': 1,
 }
 
 """ITEM_PIPELINES = {
    'scrapy.contrib.pipeline.images.FilesPipeline': 1,
 }
 """
-IMAGES_STORE = config('IMAGES_STORE', default='/home/Downloads/Scrapy_images')
+username = getpass.getuser()
+IMAGES_STORE = config('IMAGES_STORE', default='/home/{}/PyMangá'.format(username))
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
