@@ -1,6 +1,4 @@
 # enconding: utf-8
-import re
-import scrapy
 from cli import Cli
 from scrapy.utils.project import get_project_settings as settings
 from scrapy.crawler import CrawlerProcess
