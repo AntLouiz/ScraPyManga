@@ -13,6 +13,7 @@ class SoMangaItem(scrapy.Item):
     # name = scrapy.Field()
     pass
 
+
 class Images(scrapy.Item):
 
     # ... other item fields ...
