@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import scrapy
 from scrapy.exceptions import CloseSpider
 from urllib import request
@@ -12,7 +13,8 @@ class ReaderSpider(scrapy.Spider):
     
     def __init__(self, manga_data, *args, **kwargs):
         self.start_urls = ['http://somanga.net']
-        self.manga_title = str(manga_data['title'])
+        self.manga_title = " ".join(manga_data['title'])
+        self.manga_path = None
         self.chapters = manga_data['chapters']
         self.allowed_domains = ['*']  
 
@@ -43,6 +45,8 @@ class ReaderSpider(scrapy.Spider):
         
         if title:
             print("Mangá {} founded !".format(title))
+            self.manga_path = os.path.join(IMAGES_STORE, title)
+
         else:
             print("Mangá not found.")
             raise CloseSpider
@@ -86,7 +90,7 @@ class ReaderSpider(scrapy.Spider):
                 chapter_li = li_selectors[initial]
                 
                 chapter_link = chapter_li.xpath('./a/@href').extract_first()
-                print("The download will set in the {}".format(IMAGES_STORE))
+                print("The download will set in the {}.".format(self.manga_path))
 
                 print("Downloading the Chapter {} of {}...".format(self.chapters[0], title))
 
