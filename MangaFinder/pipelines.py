@@ -17,9 +17,6 @@ class SoMangaPipeline(object):
 
 
 class ImagePipeline(ImagesPipeline):
-    
-    def spider_closed(self, spider):
-        print("Download finished.")
         
     def get_media_requests(self, item, info):
         
