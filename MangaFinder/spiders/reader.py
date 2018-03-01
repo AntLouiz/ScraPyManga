@@ -28,6 +28,10 @@ class ReaderSpider(scrapy.Spider):
             url=link,
             callback=self.parse_detail,
             dont_filter=True,
+            meta = {
+                  'dont_redirect': True,
+                  'handle_httpstatus_list': [301]
+            }
         )
 
     def parse_detail(self, response):
@@ -114,6 +118,10 @@ class ReaderSpider(scrapy.Spider):
             image['image_path'] = response.meta['title']
             image['image_chapter'] = response.meta['chapter']
             image['image_page'] = "0"+str(i) if i < 10 else str(i)
-            image['image_name'] = "{}{}".format(image['image_path'], image['image_page'])
+            image['image_name'] = "{}{}{}".format(
+                image['image_path'], 
+                image['image_page'],
+                '.jpg'
+            )
 
             yield image
