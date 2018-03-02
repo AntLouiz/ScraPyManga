@@ -6,39 +6,18 @@ from scrapy.utils.project import get_project_settings as settings
 from scrapy.crawler import CrawlerProcess
 from MangaFinder.spiders.reader import ReaderSpider
 
-class MangaDataField(dict):
-    """
-        A descriptor to validate the chapters and manga title
-    """ 
-    def __setitem__(self, key, value): 
-        if key == 'chapters':
-            if isinstance(value, (list, tuple,)):
-                chapters = []
-                chapters.append(value[0])
-                if len(value) > 1:
-                    chapters.append(value[1])
-
-                dict.__setitem__(self, key, chapters)
-
-        elif key == 'title':
-            value = "".join(value)
-            
-            dict.__setitem__(self, key, value)
-        else:
-            raise Exception #change this exception later
-
 class Pymanga:
     arg_parser = Cli #set a Command Line Interface
     
     def __init__(self, *args, **kwargs):
         self.args = self.arg_parser.parse_args() #get the parser args
-        self.title = self.args.n # get the value of manga title
-        self.chapters = self.args.c[0] # get the value of manga chapters 
+        self.title = self.args.name # get the value of manga title
+        self.chapter = self.args.chap # get the value of manga chapters 
 
-        self.manga_data = MangaDataField(
-                title=self.title,
-                chapters=self.chapters
-        )
+        self.manga_data = {
+                'title': self.title,
+                'chapters': self.chapter
+        }
 
         self.spider = ReaderSpider
         self.crawler_proccess = CrawlerProcess(settings())  
