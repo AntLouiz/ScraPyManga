@@ -6,6 +6,7 @@ from urllib import request
 from slugify import slugify
 from MangaFinder.items import Images
 from MangaFinder.settings import IMAGES_STORE
+from MangaFinder.utils import manga_to_pdf
     
 
 class ReaderSpider(scrapy.Spider):
@@ -16,7 +17,15 @@ class ReaderSpider(scrapy.Spider):
         self.manga_title = " ".join(manga_data['title'])
         self.manga_path = None
         self.chapters = manga_data['chapters']
-        self.allowed_domains = ['*']  
+        self.allowed_domains = ['*']
+
+    def closed(self, reason):
+        if self.manga_path is not None:
+            print("Download finished.")
+            if len(self.chapters) == 1:
+                manga_to_pdf(self.manga_title, self.chapters[0], self.manga_path)
+
+        super(ReaderSpider, self).closed(reason)
 
     def parse(self, response):
         print("Making connection with the site.")
