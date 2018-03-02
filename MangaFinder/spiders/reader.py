@@ -16,13 +16,13 @@ class ReaderSpider(scrapy.Spider):
         self.start_urls = ['http://somanga.net']
         self.manga_title = " ".join(manga_data['title'])
         self.manga_path = None
-        self.chapters = manga_data['chapters']
+        self.chapter = manga_data['chapters']
         self.allowed_domains = ['*']
 
     def closed(self, reason):
         if self.manga_path is not None:
             print("Download finished.")
-            manga_to_pdf(self.manga_title, self.chapters[0], self.manga_path)
+            manga_to_pdf(self.manga_title, self.chapter[0], self.manga_path)
 
         super(ReaderSpider, self).closed(reason)
 
@@ -65,22 +65,22 @@ class ReaderSpider(scrapy.Spider):
       
         try:
             # parse str('05') to int(5)
-            initial = int(self.chapters[0])-1
+            initial = int(self.chapter[0])-1
             chapter_li = li_selectors[initial]
                 
             chapter_link = chapter_li.xpath('./a/@href').extract_first()
             print("The download will set in the {}.".format(self.manga_path))
 
-            print("Downloading the Chapter {} of {}...".format(self.chapters[0], title))
+            print("Downloading the Chapter {} of {}...".format(self.chapter[0], title))
 
             yield scrapy.Request(
                     url=chapter_link,
                     callback=self.parse_chapter,
-                    meta={'title':title, 'chapter':self.chapters[0]},
+                    meta={'title':title, 'chapter':self.chapter[0]},
                     dont_filter=True
             )
         except IndexError:
-            print("Chapter {} not found.".format(self.chapters[0]))
+            print("Chapter {} not found.".format(self.chapter[0]))
                  
     def parse_chapter(self, response):
      
