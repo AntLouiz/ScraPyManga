@@ -22,8 +22,7 @@ class ReaderSpider(scrapy.Spider):
     def closed(self, reason):
         if self.manga_path is not None:
             print("Download finished.")
-            if len(self.chapters) == 1:
-                manga_to_pdf(self.manga_title, self.chapters[0], self.manga_path)
+            manga_to_pdf(self.manga_title, self.chapters[0], self.manga_path)
 
         super(ReaderSpider, self).closed(reason)
 
@@ -63,54 +62,25 @@ class ReaderSpider(scrapy.Spider):
         # get all chapters li's
         li_selectors = response.xpath("//ul[contains(@class, 'capitulos')]/li")
         li_selectors.reverse() # reverse the list 
-        
-        
-        # processing the chapters 
-        if len(self.chapters) == 2:
-            if '-1' not in self.chapters:
-                # parse str('05') to int(5)
-                initial = int(self.chapters[0])-1 
-                final = int(self.chapters[1])
-
-                try:
-                    range_chapters = li_selectors[initial : final]
-                    
-                    for chapter_li in range_chapters:
-                        index = li_selectors.index(chapter_li) + 1
-                        print("Downloading the Chapter {} of {}...".format(index, title))
-                        chapter_link = chapter_li.xpath('./a/@href').extract_first()
-                        
-                        yield scrapy.Request(
-                                url=chapter_link,
-                                callback=self.parse_chapter,
-                                meta={'title':title, 'chapter':index},
-                                dont_filter=True
-                                )
-                except IndexError:
-                    print("Chapter not found.")
-            else:
-                raise NotImplementedError
-                    
-        elif len(self.chapters) == 1: 
-            
-            try:
-                # parse str('05') to int(5)
-                initial = int(self.chapters[0])-1
-                chapter_li = li_selectors[initial]
+      
+        try:
+            # parse str('05') to int(5)
+            initial = int(self.chapters[0])-1
+            chapter_li = li_selectors[initial]
                 
-                chapter_link = chapter_li.xpath('./a/@href').extract_first()
-                print("The download will set in the {}.".format(self.manga_path))
+            chapter_link = chapter_li.xpath('./a/@href').extract_first()
+            print("The download will set in the {}.".format(self.manga_path))
 
-                print("Downloading the Chapter {} of {}...".format(self.chapters[0], title))
+            print("Downloading the Chapter {} of {}...".format(self.chapters[0], title))
 
-                yield scrapy.Request(
-                        url=chapter_link,
-                        callback=self.parse_chapter,
-                        meta={'title':title, 'chapter':self.chapters[0]},
-                        dont_filter=True
-                )
-            except IndexError:
-                print("Chapter {} not found.".format(self.chapters[0]))
+            yield scrapy.Request(
+                    url=chapter_link,
+                    callback=self.parse_chapter,
+                    meta={'title':title, 'chapter':self.chapters[0]},
+                    dont_filter=True
+            )
+        except IndexError:
+            print("Chapter {} not found.".format(self.chapters[0]))
                  
     def parse_chapter(self, response):
      
