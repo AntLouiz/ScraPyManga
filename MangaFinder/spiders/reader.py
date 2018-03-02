@@ -2,7 +2,6 @@
 import os
 import scrapy
 from scrapy.exceptions import CloseSpider
-from urllib import request
 from slugify import slugify
 from MangaFinder.items import Images
 from MangaFinder.settings import IMAGES_STORE
