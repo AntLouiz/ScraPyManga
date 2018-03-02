@@ -21,18 +21,16 @@ class ReaderSpider(scrapy.Spider):
 
     def closed(self, reason):
         if self.manga_path is not None:
-            print("Download finished.")
+            self.logger.info("Download finished.")
             manga_to_pdf(self.manga_title, self.chapter[0], self.manga_path)
 
-        super(ReaderSpider, self).closed(reason)
-
     def parse(self, response):
-        print("Making connection with the site.")
+        self.logger.info("Making connection with the site.")
         title = slugify(self.manga_title)
 
         link = 'http://somanga.net/manga/{}'.format(title)
-        
-        print("Searching for {}...".format(self.manga_title))
+
+        self.logger.info("Searching for {}...".format(self.manga_title))
 
         yield scrapy.Request(
             url=link,
@@ -52,11 +50,11 @@ class ReaderSpider(scrapy.Spider):
             ).extract_first()
         
         if title:
-            print("Mangá {} founded !".format(title))
+            self.logger.info("Mangá {} founded !".format(title))
             self.manga_path = os.path.join(IMAGES_STORE, title)
 
         else:
-            print("Mangá not found.")
+            self.logger.info("Mangá not found.")
             raise CloseSpider
         
         # get all chapters li's
@@ -69,9 +67,14 @@ class ReaderSpider(scrapy.Spider):
             chapter_li = li_selectors[initial]
                 
             chapter_link = chapter_li.xpath('./a/@href').extract_first()
-            print("The download will set in the {}.".format(self.manga_path))
+            self.logger.info(
+                "The download will set in the {}.".format(self.manga_path)
+            )
 
-            print("Downloading the Chapter {} of {}...".format(self.chapter[0], title))
+
+            self.logger.info(
+                "Downloading the Chapter {} of {}...".format(self.chapter[0], title)
+            )
 
             yield scrapy.Request(
                     url=chapter_link,
@@ -79,8 +82,9 @@ class ReaderSpider(scrapy.Spider):
                     meta={'title':title, 'chapter':self.chapter[0]},
                     dont_filter=True
             )
+
         except IndexError:
-            print("Chapter {} not found.".format(self.chapter[0]))
+            self.logger.info("Chapter {} not found.".format(self.chapter[0]))
                  
     def parse_chapter(self, response):
      
