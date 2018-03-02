@@ -5,3 +5,5 @@ Scrapy==1.4.0
 Pillow==4.1.1
 
 python-decouple==3.0
+
+img2pdf==0.2.4
