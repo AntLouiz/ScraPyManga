@@ -24,7 +24,7 @@ USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:48.0) Gecko/20100101 Firefox/48
 ROBOTSTXT_OBEY = True
 
 LOG_ENABLED = config('LOG_ENABLED', default=True)
-LOG_LEVEL = 'DEBUG'
+LOG_LEVEL = config('LOG_LEVEL', default='DEBUG')
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
