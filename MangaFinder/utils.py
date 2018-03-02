@@ -8,7 +8,7 @@ def manga_to_pdf(title, chapter, manga_path):
     Converts a chapter of a manga in pdf.
   """
 
-  chapter_path = os.path.join(manga_path, chapter)
+  chapter_path = os.path.join(manga_path, str(chapter))
 
   if not os.path.exists(chapter_path):
     raise OSError()
