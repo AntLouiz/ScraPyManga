@@ -13,7 +13,7 @@ class ReaderSpider(scrapy.Spider):
     
     def __init__(self, manga_data, *args, **kwargs):
         self.start_urls = ['http://somanga.net']
-        self.manga_title = " ".join(manga_data['title'])
+        self.manga_title = str(manga_data['title'])
         self.manga_path = None
         self.chapter = manga_data['chapters']
         self.allowed_domains = ['*']
@@ -21,7 +21,7 @@ class ReaderSpider(scrapy.Spider):
     def closed(self, reason):
         if self.manga_path is not None:
             self.logger.info("Download finished.")
-            manga_to_pdf(self.manga_title, self.chapter[0], self.manga_path)
+            manga_to_pdf(self.manga_title, self.chapter, self.manga_path)
 
     def parse(self, response):
         self.logger.info("Making connection with the site.")
@@ -51,6 +51,7 @@ class ReaderSpider(scrapy.Spider):
         if title:
             self.logger.info("Mangá {} founded !".format(title))
             self.manga_path = os.path.join(IMAGES_STORE, title)
+            self.manga_title = title
 
         else:
             self.logger.info("Mangá not found.")
@@ -62,7 +63,7 @@ class ReaderSpider(scrapy.Spider):
       
         try:
             # parse str('05') to int(5)
-            initial = int(self.chapter[0])-1
+            initial = int(self.chapter)-1
             chapter_li = li_selectors[initial]
                 
             chapter_link = chapter_li.xpath('./a/@href').extract_first()
@@ -72,18 +73,18 @@ class ReaderSpider(scrapy.Spider):
 
 
             self.logger.info(
-                "Downloading the Chapter {} of {}...".format(self.chapter[0], title)
+                "Downloading the Chapter {} of {}...".format(self.chapter, title)
             )
 
             yield scrapy.Request(
                     url=chapter_link,
                     callback=self.parse_chapter,
-                    meta={'title':title, 'chapter':self.chapter[0]},
+                    meta={'title':title, 'chapter':self.chapter},
                     dont_filter=True
             )
 
         except IndexError:
-            self.logger.info("Chapter {} not found.".format(self.chapter[0]))
+            self.logger.info("Chapter {} not found.".format(self.chapter))
                  
     def parse_chapter(self, response):
      
