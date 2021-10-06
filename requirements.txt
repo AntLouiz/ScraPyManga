@@ -1,6 +1,6 @@
 python-slugify==1.2.4
 
-Scrapy==1.4.0
+Scrapy==1.8.1
 
 Pillow==4.1.1
 
